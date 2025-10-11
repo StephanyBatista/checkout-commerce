@@ -1,8 +1,11 @@
 import os
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 
 from app.checkout.router import router as checkout_router
+
+load_dotenv()
 
 app = FastAPI(title="Checkout Commerce", version="0.1.0")
 
@@ -11,7 +14,8 @@ app.include_router(checkout_router)
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok"}
+    payment_url = os.getenv("PAYMENT_SERVICE_URL")
+    return {"status": payment_url}
 
 
 if __name__ == "__main__":
