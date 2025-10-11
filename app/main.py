@@ -2,7 +2,11 @@ import os
 
 from fastapi import FastAPI
 
+from app.checkout.router import router as checkout_router
+
 app = FastAPI(title="Checkout Commerce", version="0.1.0")
+
+app.include_router(checkout_router)
 
 
 @app.get("/health")
