@@ -3,6 +3,8 @@ from enum import Enum
 
 from sqlalchemy import Column, DateTime, Float, Integer, String
 
+from app.infra.database import Base
+
 
 class CheckoutStatus(Enum):
     """Enum representing the different states of a checkout process."""
@@ -15,7 +17,7 @@ class CheckoutStatus(Enum):
     FAILED = "failed"
 
 
-class Checkout:
+class Checkout(Base):
     __tablename__ = "checkouts"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
