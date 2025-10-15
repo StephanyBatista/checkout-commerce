@@ -60,6 +60,6 @@ async def checkout_process(
         return {"checkout_id": checkout.id, "error": order_response["error"]}
 
     checkout.order_id = order_response["order_id"]
-    checkout.status = CheckoutStatus.COMPLETED.value
+    checkout.status = CheckoutStatus.SUCCESS.value
     await db.commit()
     return {"checkout_id": checkout.id, "error": None}
