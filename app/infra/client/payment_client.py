@@ -1,14 +1,12 @@
-import os
-
 import httpx
 
 from app.checkout.checkout_request import PaymentMethodRequest
+from app.client_manager import client_manager
 
 
 class PaymentClient:
-    def __init__(self):
-        self.payment_service_url = os.getenv("PAYMENT_SERVICE_URL")
-        self.client = httpx.AsyncClient(base_url=self.payment_service_url)
+    def __init__(self, client: httpx.AsyncClient):
+        self.client = client
 
     async def process(
         self,
@@ -39,4 +37,4 @@ class PaymentClient:
 
 
 def get_payment_client() -> PaymentClient:
-    return PaymentClient()
+    return PaymentClient(client=client_manager.payment_client)
