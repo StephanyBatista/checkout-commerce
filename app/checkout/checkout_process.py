@@ -1,4 +1,4 @@
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.checkout.checkout_model import Checkout, CheckoutStatus
@@ -34,7 +34,14 @@ async def checkout_process(
         checkout.status = CheckoutStatus.FAILED.value
         checkout.error = payment_response["error"]
         await db.commit()
-        return {"checkout_id": checkout.id, "error": payment_response["error"]}
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "checkout_id": checkout.id,
+                "error": "Payment processing failed",
+                "message": payment_response["error"],
+            },
+        )
 
     checkout.payment_id = payment_response["transaction_id"]
 
@@ -45,7 +52,14 @@ async def checkout_process(
         checkout.status = CheckoutStatus.FAILED.value
         checkout.error = inventory_response["error"]
         await db.commit()
-        return {"checkout_id": checkout.id, "error": inventory_response["error"]}
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "checkout_id": checkout.id,
+                "error": "Inventory failed",
+                "message": inventory_response["error"],
+            },
+        )
 
     order_response = await order_client.create(
         checkout_id=checkout.id,
@@ -57,7 +71,14 @@ async def checkout_process(
         checkout.status = CheckoutStatus.FAILED.value
         checkout.error = order_response["error"]
         await db.commit()
-        return {"checkout_id": checkout.id, "error": order_response["error"]}
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "checkout_id": checkout.id,
+                "error": "Order failed",
+                "message": order_response["error"],
+            },
+        )
 
     checkout.order_id = order_response["order_id"]
     checkout.status = CheckoutStatus.SUCCESS.value
